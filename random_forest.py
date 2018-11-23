@@ -1,6 +1,6 @@
 import urllib.request
 with urllib.request.urlopen("https://archive.ics.uci.edu/ml/machine-learning-databases/adult/adult.data") as url:
-    row_data = url.read()
+    dataset = url.read()
 X = dataset[0:13]
 y = dataset[14]
 
