@@ -4,7 +4,7 @@ from sklearn.tree import DecisionTreeClassifier
 from sklearn.naive_bayes import GaussianNB
 import numpy as np
 from collections import defaultdict
- 
+
 class NaiveBayesModelTreeClassifier(DecisionTreeClassifier):
     """
     A tree that creates a naive bayes model in each of its leaves out of the instances that got there during
@@ -42,7 +42,7 @@ class NaiveBayesModelTreeClassifier(DecisionTreeClassifier):
 
     def fit(self, X, y, sample_weight=None, check_input=True, X_idx_sorted=None):
         # Create the tree as usual
-        super().fit(
+        super(DecisionTreeClassifier, self).fit(
             X, y,
             sample_weight=sample_weight,
             check_input=check_input,
@@ -92,7 +92,7 @@ class NaiveBayesModelTreeClassifier(DecisionTreeClassifier):
 
 class RandomForestWithNaiveBayesLeavesClassifier(RandomForestClassifier):
     """
-    A Random Forest with NaiveBayesModelTreeClassifier as base_estimator
+    A Random Forest model that uses NaiveBayesModelTreeClassifier
     """
     def __init__(self,
                  n_estimators='warn',
@@ -112,7 +112,7 @@ class RandomForestWithNaiveBayesLeavesClassifier(RandomForestClassifier):
                  verbose=0,
                  warm_start=False,
                  class_weight=None):
-        super().__init__(
+        super(RandomForestClassifier, self).__init__(
             base_estimator=NaiveBayesModelTreeClassifier(),
             n_estimators=n_estimators,
             estimator_params=("criterion", "max_depth", "min_samples_split",
