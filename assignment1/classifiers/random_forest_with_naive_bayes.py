@@ -112,7 +112,7 @@ class RandomForestWithNaiveBayesLeavesClassifier(RandomForestClassifier):
                  verbose=0,
                  warm_start=False,
                  class_weight=None):
-        super(RandomForestClassifier, self).__init__(
+        super().__init__(
             base_estimator=NaiveBayesModelTreeClassifier(),
             n_estimators=n_estimators,
             estimator_params=("criterion", "max_depth", "min_samples_split",
