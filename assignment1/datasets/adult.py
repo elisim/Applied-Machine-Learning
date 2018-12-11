@@ -4,11 +4,14 @@ from copy import copy
 from sklearn import preprocessing
 from datasets.dataset import Dataset
 
+TRAIN_PATH = 'data/adult/adult.data'
+TEST_PATH = 'data/adult/adult.test'
+
 class AdultDataset(Dataset):
     
-    def __init__(self, train_path, test_path):
-        self._raw_train_data = pd.read_csv(train_path, header=None)
-        self._raw_test_data = pd.read_csv(test_path, header=None)
+    def __init__(self):
+        self._raw_train_data = pd.read_csv(TRAIN_PATH, header=None)
+        self._raw_test_data = pd.read_csv(TEST_PATH, header=None)
         self._normalize_fnlwgt(self._raw_train_data)
         self._normalize_fnlwgt(self._raw_test_data)
         assert self._raw_train_data.shape[1] == self._raw_test_data.shape[1], "The number of features in train & test is inequal"
