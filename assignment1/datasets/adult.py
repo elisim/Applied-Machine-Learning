@@ -9,9 +9,10 @@ class AdultDataset(Dataset):
     def __init__(self, train_path, test_path):
         self._raw_train_data = pd.read_csv(train_path, header=None)
         self._raw_test_data = pd.read_csv(test_path, header=None)
+        self._normalize_fnlwgt(self._raw_train_data)
+        self._normalize_fnlwgt(self._raw_test_data)
         assert self._raw_train_data.shape[1] == self._raw_test_data.shape[1], "The number of features in train & test is inequal"
-
-    
+        
     def get_classes(self):
         return ['<=50k', '>50k']
     
@@ -47,3 +48,13 @@ class AdultDataset(Dataset):
         X_train = train_data_dummies.iloc[:, :classes_cols_start]
         X_test = test_data_dummies.iloc[:, :classes_cols_start]     
         return X_train, X_test
+    
+    def _normalize_fnlwgt(self, data):
+        """
+        data - train or test data.
+        fnlwgt (final weight) is the third column, and a normalization is needed to avoid overflow. 
+        We decided to use mean normalization.
+        """
+        fnlwgt = data.iloc[:,2]
+        fnlwgt = (fnlwgt - fnlwgt.mean())/(fnlwgt.std())
+        data.iloc[:,2] = fnlwgt
