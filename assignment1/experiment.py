@@ -41,8 +41,9 @@ class Experiment(object):
         
     def print_results(self):
         results = self.get_results()
-        print("Dataset: {dataset}\n{model1} results:\n\n{model1_res}\n{model2} results:\n\n{model2_res}".format(
+        print("Dataset: {dataset}\nshape: {shape}\n{model1} results:\n\n{model1_res}\n{model2} results:\n\n{model2_res}".format(
                 dataset=self._dataset.__class__.__name__,
+                shape=self._dataset.shape,
                 model1=self._model1.__class__.__name__,
                 model1_res=results['model1'],
                 model2=self._model2.__class__.__name__,
