@@ -10,11 +10,12 @@ class AbaloneDataset(Dataset):
         self._raw_train_data = pd.read_csv(TRAIN_PATH, header=None)
         
     def get_classes(self):
-        return list(range(1,30))
+        return [str(age) for age in range(1,30)]
     
     def get_train_and_test_data(self):
-        y = self._raw_train_data.iloc[: ,[-1]] # last column
-        X = self._raw_train_data.drop(y, axis=1)
+        dummies = pd.get_dummies(self._raw_train_data)
+        y = dummies.iloc[: ,[-4]] # last column after get dummies
+        X = dummies.drop(y, axis=1)
         X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.25, shuffle=True)
         # Package data into a dictionary
         return {
