@@ -35,5 +35,4 @@ class LetterRecognitionDataset(Dataset):
         X = self._raw_train_data
         y = X.iloc[:, [0]]
         y_dummies =  le.fit_transform(y)
-        X.iloc[:, [0]] = y_dummies
         return X.drop(y, axis=1), y_dummies
