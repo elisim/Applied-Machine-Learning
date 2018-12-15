@@ -6,3 +6,4 @@ from datasets.letter_recognition import LetterRecognitionDataset
 from datasets.contraceptive_method_choice import ContraceptiveMethodChoiceDataset
 from datasets.dermatology import DermatologyDataset
 from datasets.chess import ChessDataset
+from datasets.car import CarDataset
