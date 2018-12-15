@@ -3,3 +3,4 @@ from datasets.abalone import AbaloneDataset
 from datasets.arrhythmia import ArrhythmiaDataset
 from datasets.balance_scale import BalanceScaleDataset
 from datasets.letter_recognition import LetterRecognitionDataset
+from datasets.contraceptive_method_choice import ContraceptiveMethodChoiceDataset
