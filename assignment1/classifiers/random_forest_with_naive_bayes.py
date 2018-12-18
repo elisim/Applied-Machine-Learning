@@ -7,8 +7,8 @@ from collections import defaultdict
 
 class NaiveBayesModelTreeClassifier(DecisionTreeClassifier):
     """
-    A tree that creates a naive bayes model in each of its leaves out of the instances that got there during
-    training. The prediction on the leaf is done using this model
+    Decision tree that uses a Naive Bayes model in the leaves. 
+    This tree will be used as a base_estimator for the Random Forest Classifier.
     """
     def __init__(self,
                  criterion="gini",
@@ -41,6 +41,9 @@ class NaiveBayesModelTreeClassifier(DecisionTreeClassifier):
         self._leaves = {}
 
     def fit(self, X, y, sample_weight=None, check_input=True, X_idx_sorted=None):
+        """
+        Override fit to use a Naive Bayes model.
+        """
         # Create the tree as usual
         super(DecisionTreeClassifier, self).fit(
             X, y,
@@ -48,39 +51,40 @@ class NaiveBayesModelTreeClassifier(DecisionTreeClassifier):
             check_input=check_input,
             X_idx_sorted=X_idx_sorted)
 
-        # Find the leaves each training instance reached
-        leaves = self.tree_.apply(X)
-        leaf_to_instances = defaultdict(list)
+        leaves_indices = self.tree_.apply(X) # get the index of the leaf that each sample is predicted as.
+        leaf_to_instances = defaultdict(list) # dict with a leaf_index -> instances_indices mapping
 
-        for instance_index, leaf in enumerate(leaves):
-            leaf_to_instances[leaf].append(instance_index)
+        for instance_index, leaf_index in enumerate(leaves_indices):
+            leaf_to_instances[leaf_index].append(instance_index)
 
-        # For each leaf, create SmartLeaf object which hold the naive bayes model trained on the instances that
-        # reached this leaf and save it in the tree state.
-        for leaf_index, instance_indexes in leaf_to_instances.items():
-            self._leaves[leaf_index] = NaiveBayesLeaf(leaf_index, X[instance_indexes,], y[instance_indexes])
+        # For each leaf, create a NaiveBayesLeaf which holds a naive bayes model 
+        # trained on the instances that reached this leaf.
+        for leaf_index, instances_indices in leaf_to_instances.items():
+            self._leaves[leaf_index] = NaiveBayesLeaf(leaf_index)
+            self._leaves[leaf_index].fit(X[instances_indices,], y[instances_indices])
 
         return self
 
     def predict_proba(self, X, check_input=True):
         """
-        Override the original predict_proba by simply calling the relevant naive bayes predict_proba
+        Override the original predict_proba by simply calling the NB predict_proba
         """
         X = self._validate_X_predict(X, check_input)
 
         # Find the leaf each instance reach
-        leaf_indexes = self.apply(X)
+        leaves_indices = self.apply(X)
 
         # Create placeholder matrix for the result
-        results = np.zeros(shape=(X.shape[0], self.n_classes_))
+        n_samples = X.shape[0]
+        results = np.zeros(shape=(n_samples, self.n_classes_))
 
         # For each instance call naive bayes predict_proba of the matching leaf and insert to result.
-        # This part is a little complicated because we need to handle the case where the model in the leaf
-        # didn't see all the classes and translate the model partial results to full result on all classes.
-        for instance_index, leaf_index in enumerate(leaf_indexes):
+        for instance_index, leaf_index in enumerate(leaves_indices):
             bayes_result = self._leaves[leaf_index].model.predict_proba([X[instance_index]])
             model_classes = list(self._leaves[leaf_index].model.classes_)
-
+            
+            # handle the case where the leaf didn't see all the classes. 
+            # In such case, predict zero for each class like that.
             result_with_all_classes = np.zeros(shape=self.n_classes_)
             for class_number in range(0, self.n_classes_):
                 if class_number in model_classes:
@@ -140,12 +144,15 @@ class RandomForestWithNaiveBayesLeavesClassifier(RandomForestClassifier):
         
 class NaiveBayesLeaf(object):
     """
-    Leaf that holds the naive bayes model trained on the instances that got to it during training.
+    Leaf that holds a naive bayes model trained on the instances that got
+    to it during training. 
     """
-    def __init__(self, leaf_id, X, y):
-        self._leaf_id = leaf_id
-        self.model = self._add_naive_bayes_model(X, y)
-
-    def _add_naive_bayes_model(self, X, y):
+    def __init__(self, leaf_index):
+        self.leaf_index = leaf_index
+        self.model = None
+    
+    def fit(self, X, y):
         naive_bayes_model = GaussianNB()
-        return naive_bayes_model.fit(X, y.ravel())
+        self.model = naive_bayes_model.fit(X,y)
+    
+    
