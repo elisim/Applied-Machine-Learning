@@ -7,3 +7,4 @@ from datasets.contraceptive_method_choice import ContraceptiveMethodChoiceDatase
 from datasets.dermatology import DermatologyDataset
 from datasets.chess import ChessDataset
 from datasets.car import CarDataset
+from datasets.glass import GlassDataset
