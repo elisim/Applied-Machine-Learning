@@ -34,14 +34,18 @@ class Experiment(object):
     def get_results(self):
         if self._y_test_pred == None:
             raise ValueError("run the experiment first")
+#         return  {
+#             "model1": classification_report(self._data['y_test'], self._y_test_pred[0], target_names=self._dataset.get_classes()),
+#             "model2": classification_report(self._data['y_test'], self._y_test_pred[1], target_names=self._dataset.get_classes()),
+#         }
         return  {
-            "model1": classification_report(self._data['y_test'], self._y_test_pred[0], target_names=self._dataset.get_classes()),
-            "model2": classification_report(self._data['y_test'], self._y_test_pred[1], target_names=self._dataset.get_classes()),
+            "model1": self._model1.score(self._data['X_test'], self._data['y_test']),
+            "model2": self._model2.score(self._data['X_test'], self._data['y_test'])
         }
         
     def print_results(self):
         results = self.get_results()
-        print("Dataset: {dataset}\nshape: {shape}\n{model1} results:\n\n{model1_res}\n{model2} results:\n\n{model2_res}".format(
+        print("Dataset: {dataset}\nshape: {shape}\n{model1} score: {model1_res:.2f}\n{model2} score: {model2_res:.2f}".format(
                 dataset=self._dataset.__class__.__name__,
                 shape=self._dataset.shape,
                 model1=self._model1.__class__.__name__,
