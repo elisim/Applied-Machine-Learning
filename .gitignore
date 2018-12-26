@@ -104,3 +104,4 @@ venv.bak/
 .mypy_cache/
 
 assignment1/out/
+assignment2/out/
