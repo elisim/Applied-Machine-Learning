@@ -8,7 +8,7 @@ class DecorateDataGeneration():
     nominal attribute: compute the probability of occurrence of each distinct column in its domain and generate columns based on this distribution. 
     """
     
-    def __init__():
+    def __init__(self):
         pass
     
     def gen_data(self, X, art_factor):
@@ -60,7 +60,7 @@ class DecorateDataGeneration():
     def _gen_nominal_data(self, column):
         nom_counts = dict(column.value_counts()).values() # counts of each nominal value
         nom_counts = np.array(list(nom_counts)) # to numpy array
-        if (len(nom_counts) < 2) 
+        if (len(nom_counts) < 2):
             raise TypeError('Nominal attribute has less than two distinct values')
             
         ### Perform Laplace smoothing
@@ -78,7 +78,7 @@ class DecorateDataGeneration():
     def _select_index_probabilistically(self, stats):
         rnd = np.random.uniform()
         index = 0
-        while (index < len(stats) and rnd > stats[index])
+        while (index < len(stats) and rnd > stats[index]):
             index += 1
         return index
         

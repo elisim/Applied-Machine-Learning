@@ -1,1 +1,1 @@
-from decorate_method import DecorateDataGeneration
+from data_generation_methods.decorate_method import DecorateDataGeneration
