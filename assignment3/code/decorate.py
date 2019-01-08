@@ -1,6 +1,7 @@
 from sklearn.base import BaseEstimator, ClassifierMixin
 from sklearn.tree import DecisionTreeClassifier
 import numpy as np
+from data_generation_methods import *
 
 class DecorateClassifier(BaseEstimator, ClassifierMixin):  
     """
@@ -12,7 +13,7 @@ class DecorateClassifier(BaseEstimator, ClassifierMixin):
                  n_estimators=15,
                  n_iter=50,
                  random_seed=1,
-                 gen_artificial_method=DecorateGenArtificialMethod(),
+                 gen_artificial_method=DecorateDataGeneration(),
                  **gen_artificial_kwargs):
         """
         base_estimator - base learning algorithm (DecisionTreeClassifier as default)
@@ -46,10 +47,10 @@ class DecorateClassifier(BaseEstimator, ClassifierMixin):
             
             # generate artificial training examples
             art_factor = gen_artificial_kwargs.get('art_factor', 1.0) 
-            X_art = gen_artificial_method.get_artificial(X, art_factor)
+            X_art = gen_artificial_method.gen_data(X, art_factor)
             
             # label artificial examples
-            y_art = gen_artificial_method.label_data(X_art)
+            y_art = gen_artificial_method.label_data(X_art, self.pred_prob(X_art))
             
             # add new artificial data
             X_concat, y_concat = self._concat(X, y, X_art, y_art)
