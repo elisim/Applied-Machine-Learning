@@ -24,7 +24,7 @@ class DecorateDataGeneration():
             col_type = types[col_idx]
             if pd_types.is_numeric_dtype(col_type): # numeric
                 art_data = np.random.normal(column.mean(), column.std(), n_art_samples)
-            elif pd_types.is_categorical_dtype(col_type): # nominal
+            elif pd_types.is_object_dtype(col_type): # nominal
                 art_data = self._gen_nominal_data(column)
             else:
                 raise TypeError("Decorate can only handle numeric and nominal columns, but got '{}' type".format(col_type))
@@ -48,9 +48,9 @@ class DecorateDataGeneration():
                 inv_probs[i] = 1.0/prob
         inv_probs = inv_probs/np.sum(inv_probs)
         # Calculate cumulative probabilities
-        stats = []
+        stats = [None]*len(inv_probs)
         stats[0] = inv_probs[0]
-        for i in range(1, len(inv_probs)):
+        for i in range(1, len(stats)):
             stats[i] = stats[i-1] + inv_probs[i]
         ans = self._select_index_probabilistically(stats)
         
@@ -68,9 +68,9 @@ class DecorateDataGeneration():
         counts = counts/np.sum(counts)
         
         # Calculate cumulative probabilities
-        stats = []
+        stats = [None]*(len(counts)-1)
         stats[0] = counts[0]
-        for i in range(1, len(counts)-1):
+        for i in range(1, len(stats)):
             stats[i] = stats[i-1] + counts[i]
         
         return self._select_index_probabilistically(stats)
