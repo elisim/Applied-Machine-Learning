@@ -36,7 +36,7 @@ class DecorateClassifier(BaseEstimator, ClassifierMixin):
         trials = 1 # number of Decorate iterations 
         
         # initialize first estimator
-        estimator = base_estimator()
+        estimator = self.base_estimator()
         estimator.fit(X,y)
         self.ensemble_.append(estimator)
 
