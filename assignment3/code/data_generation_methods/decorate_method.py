@@ -32,36 +32,32 @@ class DecorateDataGeneration():
         
         return X_art
                 
-        
     def label_data(self, X_art, y_probs):
         """
         X_art - artificially generated examples
         y_probs - class membership probabilities of instance
-        return: lables such that the probability of selection is inversely proportional to the ensemble's predictions.
+        return: lables such that the probability of selection is inversely proportional to the ensemble's predictions
         """
-        y_probs = y_probs.reshape(-1) # to 1D vector
-        inv_probs = np.zeros(len(y_probs), dtype=float)
-        for i, prob in enumerate(y_probs):
-            if prob == 0:
-                inv_probs[i] = (2 ** 32)/len(y_probs)
-            else:
-                inv_probs[i] = 1.0/prob
-                
-        inv_probs = inv_probs/np.sum(inv_probs)
-        inv_probs = inv_probs.reshape(-1,2) # two cols
-
-        # Calculate cumulative probabilities
         ans = []
-        for probs in inv_probs:
-            stats = [None]*len(probs)
-            stats[0] = probs[0]
-            for i in range(1, len(stats)):
-                stats[i] = stats[i-1] + probs[i]
+        for y_prob in y_probs:
+            inv_probs = np.zeros(len(y_prob), dtype=float)
+            for i, prob in enumerate(y_prob):
+                if prob == 0:
+                    inv_probs[i] = (2 ** 10)/len(y_probs)
+                else:
+                    inv_probs[i] = 1.0/prob
+            inv_probs = inv_probs/np.sum(inv_probs)
+            
+            # Calculate cumulative probabilities
+            stats = [None]*len(inv_probs)
+            stats[0] = inv_probs[0]
+            for i in range(1, len(inv_probs)):
+                stats[i] = stats[i-1] + inv_probs[i]
             ans.append(self._select_index_probabilistically(stats))
-
+            
         return np.array(ans)
-        
-        
+
+    
     def _gen_nominal_data(self, column):
         nom_counts = dict(column.value_counts()).values() # counts of each nominal value
         nom_counts = np.array(list(nom_counts)) # to numpy array
@@ -86,7 +82,9 @@ class DecorateDataGeneration():
         while (index < len(stats) and rnd > stats[index]):
             index += 1
         return index
-        
+    
+    def __repr__(self):
+        return '<class \'{}\'>'.format(self.__class__.__name__)
         
         
         

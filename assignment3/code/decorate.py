@@ -10,27 +10,26 @@ class DecorateClassifier(BaseEstimator, ClassifierMixin):
 
     def __init__(self, 
                  base_estimator=DecisionTreeClassifier,  
+                 gen_artificial_method=DecorateDataGeneration(),
                  n_estimators=15,
                  n_iter=50,
-                 random_seed=1,
-                 gen_artificial_method=DecorateDataGeneration(),
-                 **gen_artificial_kwargs):
+                 art_factor=1.0,
+                 random_seed=1.0
+                 ):
         """
         base_estimator - base learning algorithm (DecisionTreeClassifier as default)
+        gen_artificial_method - class that specify how to generate the artificial examples (Decorate method as default)
         n_estimators - desired ensemble size (default 15)
         n_iter - maximum number of iterations to build an ensemble (default 50)
+        art_factor - factor that determines number of artificial examples to generate (default 1.0)
         random_seed - random number seed (default 1)
-        gen_artificial_method - class that specify how to generate the artificial examples (Decorate method as default)
-        
-        **gen_artificial_kwargs:
-            art_factor - factor that determines number of artificial examples to generate (default 1.0)
         """
         self.base_estimator = base_estimator
+        self.gen_artificial_method = gen_artificial_method
         self.n_estimators = n_estimators
         self.n_iter = n_iter
+        self.art_factor = art_factor 
         self.random_seed = random_seed
-        self.gen_artificial_method = gen_artificial_method
-        self.art_factor = gen_artificial_kwargs.get('art_factor', 1.0) 
         self.ensemble_ = [] # initialize ensemble
         
     def fit(self, X, y):
@@ -41,7 +40,8 @@ class DecorateClassifier(BaseEstimator, ClassifierMixin):
         estimator.fit(X,y)
         self.ensemble_.append(estimator)
 
-        ens_error = self._compute_error(X, y) # compute ensemble error
+        # compute ensemble error
+        ens_error = self._compute_error(X, y) 
         
         # repeat till desired ensemble size is reached OR the max number of iterations is exceeded 
         while len(self.ensemble_)<self.n_estimators and trials<self.n_iter:
@@ -53,13 +53,7 @@ class DecorateClassifier(BaseEstimator, ClassifierMixin):
             y_art = self.gen_artificial_method.label_data(X_art, self.predict_proba(X_art))
             
             # add new artificial data
-            print(X.shape)
-            print(y.shape)
-            print(X_art.shape)
-            print(y_art.shape)
             X_concat, y_concat = self._concat(X, y, X_art, y_art)
-            print("X_concat: ", X_concat.shape)
-            print("y_concat: ", y_concat.shape)
             
             # build new estimator
             new_estimator = self.base_estimator()
@@ -68,6 +62,7 @@ class DecorateClassifier(BaseEstimator, ClassifierMixin):
             # test if the new estimator should be added to the ensemble
             self.ensemble_.append(new_estimator)
             curr_ens_error = self._compute_error(X, y) 
+            
             if curr_ens_error <= ens_error:
                  # if adding the new member did not increase the error
                 ens_error = curr_ens_error
@@ -111,7 +106,4 @@ class DecorateClassifier(BaseEstimator, ClassifierMixin):
         X_concat = np.vstack((X, X_art))
         y_concat = np.hstack((y, y_art))
         return X_concat, y_concat
-
-#     def __repr__(self):
-#         pass
     
