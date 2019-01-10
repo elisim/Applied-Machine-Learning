@@ -30,6 +30,7 @@ class DecorateClassifier(BaseEstimator, ClassifierMixin):
         self.n_iter = n_iter
         self.random_seed = random_seed
         self.gen_artificial_method = gen_artificial_method
+        self.art_factor = gen_artificial_kwargs.get('art_factor', 1.0) 
         self.ensemble_ = [] # initialize ensemble
         
     def fit(self, X, y):
@@ -46,17 +47,22 @@ class DecorateClassifier(BaseEstimator, ClassifierMixin):
         while len(self.ensemble_)<self.n_estimators and trials<self.n_iter:
             
             # generate artificial training examples
-            art_factor = gen_artificial_kwargs.get('art_factor', 1.0) 
-            X_art = gen_artificial_method.gen_data(X, art_factor)
+            X_art = self.gen_artificial_method.gen_data(X, self.art_factor)
             
             # label artificial examples
-            y_art = gen_artificial_method.label_data(X_art, self.pred_prob(X_art))
+            y_art = self.gen_artificial_method.label_data(X_art, self.predict_proba(X_art))
             
             # add new artificial data
+            print(X.shape)
+            print(y.shape)
+            print(X_art.shape)
+            print(y_art.shape)
             X_concat, y_concat = self._concat(X, y, X_art, y_art)
+            print("X_concat: ", X_concat.shape)
+            print("y_concat: ", y_concat.shape)
             
             # build new estimator
-            new_estimator = base_estimator()
+            new_estimator = self.base_estimator()
             new_estimator.fit(X_concat, y_concat)
             
             # test if the new estimator should be added to the ensemble
@@ -77,7 +83,7 @@ class DecorateClassifier(BaseEstimator, ClassifierMixin):
         """
         sum over all estimators predictions, and divide by the size of the ensemble
         """
-        ans = np.array([0,0], dtype=float)
+        ans = np.zeros((len(X), 2), dtype=float)
         for estimator in self.ensemble_:
             pred = estimator.predict_proba(X)
             ans += pred
@@ -103,7 +109,7 @@ class DecorateClassifier(BaseEstimator, ClassifierMixin):
         concatenate data with artificial data
         """
         X_concat = np.vstack((X, X_art))
-        y_concat = np.vstack((y, y_art))
+        y_concat = np.hstack((y, y_art))
         return X_concat, y_concat
 
 #     def __repr__(self):

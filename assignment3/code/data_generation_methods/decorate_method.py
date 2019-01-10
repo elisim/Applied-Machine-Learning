@@ -40,21 +40,26 @@ class DecorateDataGeneration():
         return: lables such that the probability of selection is inversely proportional to the ensemble's predictions.
         """
         y_probs = y_probs.reshape(-1) # to 1D vector
-        inv_probs = np.array([0,0], dtype=float)
+        inv_probs = np.zeros(len(y_probs), dtype=float)
         for i, prob in enumerate(y_probs):
             if prob == 0:
                 inv_probs[i] = (2 ** 32)/len(y_probs)
             else:
                 inv_probs[i] = 1.0/prob
+                
         inv_probs = inv_probs/np.sum(inv_probs)
+        inv_probs = inv_probs.reshape(-1,2) # two cols
+
         # Calculate cumulative probabilities
-        stats = [None]*len(inv_probs)
-        stats[0] = inv_probs[0]
-        for i in range(1, len(stats)):
-            stats[i] = stats[i-1] + inv_probs[i]
-        ans = self._select_index_probabilistically(stats)
-        
-        return np.reshape(ans,-1,2) # two cols
+        ans = []
+        for probs in inv_probs:
+            stats = [None]*len(probs)
+            stats[0] = probs[0]
+            for i in range(1, len(stats)):
+                stats[i] = stats[i-1] + probs[i]
+            ans.append(self._select_index_probabilistically(stats))
+
+        return np.array(ans)
         
         
     def _gen_nominal_data(self, column):
