@@ -51,6 +51,7 @@ class DecorateClassifier(BaseEstimator, ClassifierMixin):
             
             # label artificial examples
             y_art = self.gen_artificial_method.label_data(X_art, self.predict_proba(X_art))
+            self._assert_label_data(y, y_art)
             
             # add new artificial data
             X_concat, y_concat = self._concat(X, y, X_art, y_art)
@@ -78,9 +79,12 @@ class DecorateClassifier(BaseEstimator, ClassifierMixin):
         """
         sum over all estimators predictions, and divide by the size of the ensemble
         """
-        ans = np.zeros((len(X), 2), dtype=float)
+        init = True # init the ans
         for estimator in self.ensemble_:
             pred = estimator.predict_proba(X)
+            if init:
+                ans = np.zeros(pred.shape, dtype=float)
+                init = False
             ans += pred
         return ans / len(self.ensemble_)
     
@@ -107,3 +111,9 @@ class DecorateClassifier(BaseEstimator, ClassifierMixin):
         y_concat = np.hstack((y, y_art))
         return X_concat, y_concat
     
+    def _assert_label_data(self, y, y_art):
+        """
+        assert that all the labels in y_art are in y
+        """
+        xor = set(y).symmetric_difference(set(y_art))
+        assert len(xor) == 0, "y_art contains incorrect labels: {}".format(xor-set(y))

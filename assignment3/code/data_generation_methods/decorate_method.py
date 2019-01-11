@@ -43,7 +43,7 @@ class DecorateDataGeneration():
             inv_probs = np.zeros(len(y_prob), dtype=float)
             for i, prob in enumerate(y_prob):
                 if prob == 0:
-                    inv_probs[i] = (2 ** 10)/len(y_probs)
+                    inv_probs[i] = (2 ** 10)/len(y_prob)
                 else:
                     inv_probs[i] = 1.0/prob
             inv_probs = inv_probs/np.sum(inv_probs)
@@ -54,7 +54,7 @@ class DecorateDataGeneration():
             for i in range(1, len(inv_probs)):
                 stats[i] = stats[i-1] + inv_probs[i]
             ans.append(self._select_index_probabilistically(stats))
-            
+
         return np.array(ans)
 
     
