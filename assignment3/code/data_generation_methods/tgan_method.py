@@ -4,18 +4,22 @@ import numpy as np
 
 class TganDataGeneration():
     """
+    Data generation using TGAN: TGAN: A Tabular Data Synthesizer (github.com/DAI-Lab/TGAN)
     """
     
     def __init__(self):
-        pass
+        self._synthetic = None
     
     def gen_data(self, X, art_factor):
         """
-        X - pandas dataframe with header
-        art_factor - factor that determines number of artificial examples to generate
+        X - pandas dataframe with header 
+        art_factor - factor that determines number of artificial examples to generate.
+                     By default, art_factor = 1
+        the parameters doesn't has usage because synthetic already created
         """
-        X_art = pd.DataFrame()
-       
+        
+        self._synthetic = pd.read_csv
+        
         
         return X_art
                 
