@@ -119,4 +119,4 @@ class DecorateClassifier(BaseEstimator, ClassifierMixin):
         assert that all the labels in y_art are in y
         """
         xor = set(y).symmetric_difference(set(y_art))
-        assert len(xor) == 0, "y_art contains incorrect labels: {}".format(xor-set(y))
+        assert len(xor-set(y)) == 0, "y_art contains incorrect labels: {}".format(xor-set(y))
