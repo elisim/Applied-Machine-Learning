@@ -9,16 +9,17 @@ class DecorateDataGeneration():
     """
     
     def __init__(self):
-        pass
+        self.art_factor = None
     
-    def gen_data(self, X, art_factor):
+    def gen_data(self, X, **kwargs):
         """
         X - pandas dataframe with header
         art_factor - factor that determines number of artificial examples to generate
         """
+        self.art_factor = kwargs.get('art_factor', 1.0) 
         X_art = pd.DataFrame()
         types = X.dtypes
-        n_art_samples = int(art_factor*len(X)) # compute number of artficial samples
+        n_art_samples = int(self.art_factor*len(X)) # compute number of artficial samples
         
         for col_idx, (key, column) in enumerate(X.iteritems()):
             col_type = types[col_idx]
@@ -84,7 +85,7 @@ class DecorateDataGeneration():
         return index
     
     def __repr__(self):
-        return '<class \'{}\'>'.format(self.__class__.__name__)
+        return '<class \'{}\', art_factor={}>'.format(self.__class__.__name__, self.art_factor)
         
         
         
