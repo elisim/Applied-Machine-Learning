@@ -10,26 +10,29 @@ class DecorateClassifier(BaseEstimator, ClassifierMixin):
 
     def __init__(self, 
                  base_estimator=DecisionTreeClassifier,  
-                 gen_artificial_method=DecorateDataGeneration(),
                  n_estimators=15,
                  n_iter=50,
-                 art_factor=1.0,
-                 random_seed=1.0
+                 random_seed=1.0,
+                 gen_artificial_method=DecorateDataGeneration(),
+                 **gen_kwargs,
                  ):
         """
         base_estimator - base learning algorithm (DecisionTreeClassifier as default)
         gen_artificial_method - class that specify how to generate the artificial examples (Decorate method as default)
         n_estimators - desired ensemble size (default 15)
         n_iter - maximum number of iterations to build an ensemble (default 50)
-        art_factor - factor that determines number of artificial examples to generate (default 1.0)
         random_seed - random number seed (default 1)
+        
+        === gen_kwargs: ===
+        art_factor - factor that determines number of artificial examples to generate (default 1.0)
+        dataset - dataset name
         """
         self.base_estimator = base_estimator
-        self.gen_artificial_method = gen_artificial_method
         self.n_estimators = n_estimators
         self.n_iter = n_iter
-        self.art_factor = art_factor 
         self.random_seed = random_seed
+        self.gen_artificial_method = gen_artificial_method
+        self.gen_kwargs = gen_kwargs
         self.ensemble_ = [] # initialize ensemble
         
     def fit(self, X, y):
@@ -47,7 +50,7 @@ class DecorateClassifier(BaseEstimator, ClassifierMixin):
         while len(self.ensemble_)<self.n_estimators and trials<self.n_iter:
             
             # generate artificial training examples
-            X_art = self.gen_artificial_method.gen_data(X, self.art_factor)
+            X_art = self.gen_artificial_method.gen_data(X, **self.gen_kwargs)
             
             # label artificial examples
             y_art = self.gen_artificial_method.label_data(X_art, self.predict_proba(X_art))
