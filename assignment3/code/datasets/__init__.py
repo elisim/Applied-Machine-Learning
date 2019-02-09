@@ -8,3 +8,6 @@ from datasets.dermatology import DermatologyDataset
 from datasets.chess import ChessDataset
 from datasets.car import CarDataset
 from datasets.glass import GlassDataset
+from datasets.lymphography import LymphographyDataset
+from datasets.nursery import NurseryDataset
+from datasets.hayes_roth import HayesRothDataset

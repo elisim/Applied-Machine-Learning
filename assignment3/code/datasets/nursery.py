@@ -1,24 +1,25 @@
 from sklearn.model_selection import train_test_split
 import pandas as pd
+import numpy as np
 from datasets.dataset import Dataset
 
-TRAIN_PATH = 'data/balance-scale/balance-scale.data'
-n_features = 4
+TRAIN_PATH = 'data/nursery/nursery.data'
+n_features = 8
 
-class BalanceScaleDataset(Dataset):
+class NurseryDataset(Dataset):
     
     def __init__(self):
         self._raw_train_data = pd.read_csv(TRAIN_PATH, names=["c" + str(i) for i in range(n_features)] + ["target"])
         
     def get_classes(self):
-        return [str(class_index) for class_index in range(1,6)]
+        return [str(age) for age in range(1,30)]
     
     def get_train_and_test_data(self):
-        X = self._raw_train_data
-        y = X.iloc[: ,[-1]] # last column 
-        X = X.drop(y, axis=1)
-        X_dummies = pd.get_dummies(X)
-        X_train, X_test, y_train, y_test = train_test_split(X_dummies, y, test_size=0.25, shuffle=True)
+        X = self._raw_train_data 
+        y = X.target
+        X = X.drop(columns=['target'], axis=1)
+        X = pd.get_dummies(X)
+        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.25, shuffle=True)
         # Package data into a dictionary
         return {
           'X_train': X_train, 'y_train': y_train,
@@ -28,4 +29,8 @@ class BalanceScaleDataset(Dataset):
     @property
     def shape(self):
         return self._raw_train_data.shape
+    
+
+        
+
     

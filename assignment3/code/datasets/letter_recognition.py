@@ -5,11 +5,12 @@ from string import ascii_uppercase
 from sklearn import preprocessing
 
 TRAIN_PATH = 'data/letter-recognition/letter-recognition.data'
+n_features = 16
 
 class LetterRecognitionDataset(Dataset):
     
     def __init__(self):
-        self._raw_train_data = pd.read_csv(TRAIN_PATH, header=None)
+        self._raw_train_data = pd.read_csv(TRAIN_PATH, names=['target'] + ["c" + str(i) for i in range(n_features)])
         
     def get_classes(self):
         return list(ascii_uppercase)
@@ -31,8 +32,6 @@ class LetterRecognitionDataset(Dataset):
         """
         Replace the first column with dummies
         """
-        le = preprocessing.LabelEncoder()
         X = self._raw_train_data
-        y = X.iloc[:, [0]]
-        y_dummies =  le.fit_transform(y)
-        return X.drop(y, axis=1), y_dummies
+        y = X.target
+        return X.drop(columns=['target'], axis=1), y

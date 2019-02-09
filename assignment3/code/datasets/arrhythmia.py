@@ -3,12 +3,13 @@ import pandas as pd
 from datasets.dataset import Dataset
 
 TRAIN_PATH = 'data/arrhythmia/arrhythmia.data'
+n_features = 279
 
 class ArrhythmiaDataset(Dataset):
     
     def __init__(self):
-        self._raw_train_data = pd.read_csv(TRAIN_PATH, header=None)
-        
+        self._raw_train_data = pd.read_csv(TRAIN_PATH, names=["c" + str(i) for i in range(n_features)] + ["target"])
+
     def get_classes(self):
         """
         Class code :   Class   :               
@@ -34,7 +35,7 @@ class ArrhythmiaDataset(Dataset):
     def get_train_and_test_data(self):
         data_without_missing = self._raw_train_data.replace(to_replace='?', value=0, inplace=False)
         y = data_without_missing.iloc[: ,-1] # last column 
-        X = data_without_missing.drop(y, axis=1)
+        X = data_without_missing.drop(columns=['target'], axis=1)
         X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.25, shuffle=True)
         # Package data into a dictionary
         return {

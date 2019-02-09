@@ -1,13 +1,15 @@
 from sklearn.model_selection import train_test_split
 import pandas as pd
+import numpy as np
 from datasets.dataset import Dataset
 
 TRAIN_PATH = 'data/abalone/abalone.data'
+n_features = 8
 
 class AbaloneDataset(Dataset):
     
     def __init__(self):
-        self._raw_train_data = pd.read_csv(TRAIN_PATH, header=None)
+        self._raw_train_data = pd.read_csv(TRAIN_PATH, names=["c" + str(i) for i in range(n_features)] + ["target"])
         
     def get_classes(self):
         return [str(age) for age in range(1,30)]
@@ -26,4 +28,8 @@ class AbaloneDataset(Dataset):
     @property
     def shape(self):
         return self._raw_train_data.shape
+    
+
+        
+
     

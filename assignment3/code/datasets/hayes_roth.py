@@ -1,23 +1,22 @@
 from sklearn.model_selection import train_test_split
 import pandas as pd
 from datasets.dataset import Dataset
+from string import ascii_uppercase 
 from sklearn import preprocessing
 
-TRAIN_PATH = 'data/car/car.data'
-n_features = 6
+TRAIN_PATH = 'data/hayes-roth/hayes-roth.data'
+n_features = 5
 
-
-class CarDataset(Dataset):
+class HayesRothDataset(Dataset):
     
     def __init__(self):
         self._raw_train_data = pd.read_csv(TRAIN_PATH, names=["c" + str(i) for i in range(n_features)] + ["target"])
         
     def get_classes(self):
-        return ['unacc', 'acc', 'good', 'v-good']
-                
+        return list(ascii_uppercase)
     
     def get_train_and_test_data(self):
-        X_dummies, y_dummies = self._to_dummies()
+        X_dummies, y_dummies = self._letters_to_dummes()
         X_train, X_test, y_train, y_test = train_test_split(X_dummies, y_dummies, test_size=0.25, shuffle=True)
         # Package data into a dictionary
         return {
@@ -29,11 +28,10 @@ class CarDataset(Dataset):
     def shape(self):
         return self._raw_train_data.shape
     
-    def _to_dummies(self):
+    def _letters_to_dummes(self):
         """
-        use one hot encoding on the dataset.
+        Replace the first column with dummies
         """
         X = self._raw_train_data
-        y = X.iloc[:, [-1]]
-        X = X.drop(columns=['target'], axis=1)
-        return pd.get_dummies(X), y
+        y = X.target
+        return X.drop(columns=['target'], axis=1), y

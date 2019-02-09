@@ -4,11 +4,13 @@ from datasets.dataset import Dataset
 from sklearn import preprocessing
 
 TRAIN_PATH = 'data/chess/chess.data'
+n_features = 6
+
 
 class ChessDataset(Dataset):
     
     def __init__(self):
-        self._raw_train_data = pd.read_csv(TRAIN_PATH, header=None)
+        self._raw_train_data = pd.read_csv(TRAIN_PATH, names=["c" + str(i) for i in range(n_features)] + ["target"])
         
     def get_classes(self):
         return ['draw',  
@@ -47,9 +49,7 @@ class ChessDataset(Dataset):
         """
         use one hot encoding on the dataset.
         """
-        le = preprocessing.LabelEncoder()
         X = self._raw_train_data
         y = X.iloc[:, [-1]]
-        y_dummies =  le.fit_transform(y)
-        X = X.drop(y, axis=1)
-        return pd.get_dummies(X), y_dummies
+        X = X.drop(columns=['target'], axis=1)
+        return pd.get_dummies(X), y
