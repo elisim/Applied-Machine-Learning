@@ -11,6 +11,7 @@ class LetterRecognitionDataset(Dataset):
     
     def __init__(self):
         self._raw_train_data = pd.read_csv(TRAIN_PATH, names=['target'] + ["c" + str(i) for i in range(n_features)])
+        self.name = 'letter-recognition'
         
     def get_classes(self):
         return list(ascii_uppercase)

@@ -27,16 +27,23 @@ class Dataset(ABC):
         """
         pass
     
-    
     def get_X_y(self):
+        X, y, le = self._get_X_y_le()
+        return X, y
+    
+    def get_le(self):
+        X, y, le = self._get_X_y_le()
+        return le
+    
+    def _get_X_y_le(self):
         """
         Returns the data after get_dummies, and labels after encoding
         """
         X, y = self._concat(self.get_train_and_test_data())
         X, y = self._remove_samples(X,y,10) # delete rows with less than 10 samples with class
-        y = preprocessing.LabelEncoder().fit_transform(y)
-        return X, y
-        
+        le = preprocessing.LabelEncoder()
+        y = le.fit_transform(y)
+        return X, y, le
     
     def _concat(self, data):
         """
