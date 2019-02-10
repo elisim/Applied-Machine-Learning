@@ -1,1 +1,0 @@
-{"sample_rows": 214, "models": [["src/TGAN_synthesizer.py", "--batch_size", "100", "--z_dim", "50", "--num_gen_rnn", "100", "--num_gen_feature", "600", "--num_dis_layers", "4", "--num_dis_hidden", "100", "--learning_rate", "0.0005", "--noise", "0.3"]], "model_gobal_param": ["--max_epoch", "2", "--steps_per_epoch", "1000", "--data", "expdir/glass/train.npz"]}

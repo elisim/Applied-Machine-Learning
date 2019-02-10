@@ -1,1 +1,0 @@
-{"sample_rows": 28000, "models": [["src/TGAN_synthesizer.py", "--batch_size", "200", "--z_dim", "50", "--num_gen_rnn", "100", "--num_gen_feature", "300", "--num_dis_layers", "5", "--num_dis_hidden", "500", "--learning_rate", "0.0005", "--noise", "0.3"]], "model_gobal_param": ["--max_epoch", "2", "--steps_per_epoch", "100", "--data", "expdir/chess/train.npz"]}
