@@ -9,6 +9,7 @@ class BalanceScaleDataset(Dataset):
     
     def __init__(self):
         self._raw_train_data = pd.read_csv(TRAIN_PATH, names=["c" + str(i) for i in range(n_features)] + ["target"])
+        self.name = 'balance_scale'
         
     def get_classes(self):
         return [str(class_index) for class_index in range(1,6)]
