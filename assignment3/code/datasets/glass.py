@@ -9,6 +9,7 @@ class GlassDataset(Dataset):
     
     def __init__(self):
         self._raw_train_data = pd.read_csv(TRAIN_PATH, names=["c" + str(i) for i in range(n_features)] + ["target"])
+        self.name = 'glass'
         
     def get_classes(self):
         return [str(glass_type) for glass_type in range(1,8)]

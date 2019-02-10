@@ -11,6 +11,7 @@ class ChessDataset(Dataset):
     
     def __init__(self):
         self._raw_train_data = pd.read_csv(TRAIN_PATH, names=["c" + str(i) for i in range(n_features)] + ["target"])
+        self.name = 'chess'
         
     def get_classes(self):
         return ['draw',  
